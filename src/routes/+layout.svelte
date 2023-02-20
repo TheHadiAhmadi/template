@@ -1,5 +1,6 @@
 <script lang="ts">
   import "virtual:windi.css";
-</script>
+  import '@ubeac/svelte/styles/tabler.css'
+</script> 
 
 <slot />

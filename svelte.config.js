@@ -1,6 +1,6 @@
 import adapter from "@sveltejs/adapter-vercel";
 import { vitePreprocess } from "@sveltejs/kit/vite";
-import ifPreprocess from "@ubeac/svelte/preprocessors/if";
+import ifPreprocess from "@ubeac/svelte-preprocessors/if";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
