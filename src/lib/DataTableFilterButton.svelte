@@ -15,7 +15,7 @@
   export let key: any | undefined = undefined;
   export let label: any | undefined = undefined;
   export let type: any | undefined = "text";
-  export let items: any[] = [];
+  export let items: SelectItems[] = [];
 
   let text: string | undefined = undefined;
   export let value: any | undefined = undefined;

@@ -6,20 +6,30 @@
     TableCell,
     TableBody,
     TableHead,
+    Button,
   } from "@ubeac/svelte";
   import { tick } from "svelte";
+  import type { SortParams } from "./BaseService";
+  import type {
+    DataTableFilter,
+    DataTableHeader,
+  } from "./data-table/DataTable.types";
   import DataTableFilterButton from "./DataTableFilterButton.svelte";
   import DataTablePagination from "./DataTablePagination.svelte";
 
-  export let headers: any[] = [];
-  export let items: any[] = [];
-  export let selected: any[] = [];
-  export let defaultFilters: any[] = [];
-  export let filters: any[] = defaultFilters;
+  type T = $$Generic;
+
+  export let headers: DataTableHeader[] = [];
+  export let items: T[] = [];
+  export let selected: T[] = [];
+  export let defaultFilters: DataTableFilter[] = [];
+  export let filters: DataTableFilter[] = defaultFilters;
+  export let sort: SortParams | undefined = undefined;
   export let page: number | undefined = undefined;
   export let perPage: number | undefined = undefined;
   export let total: number | undefined = undefined;
   export let loading: boolean = false;
+  export let sortable: boolean = false;
 
   export let footerMode: "slot" | "pagination" | "none" = "none";
   export let headerMode: "slot" | "filters" | "none" = "none";
@@ -69,6 +79,18 @@
     }
   }
 
+  function changeSort(name: string) {
+    console.log("changeSort", name);
+    if (!sort || sort.field !== name) {
+      sort = {
+        field: name,
+        order: "ASC",
+      };
+    } else {
+      sort.order = sort.order === "ASC" ? "DESC" : "ASC";
+    }
+  }
+
   function changeSelection(event: any, index: number) {
     const value = event.target.checked;
 
@@ -88,8 +110,8 @@
     }
   }
 
-  let appliedFilters: any = {};
-  function updateFilters(event: CustomEvent<string>, key: string) {
+  let appliedFilters: Record<string, DataTableFilter> = {};
+  function updateFilters(event: CustomEvent<DataTableFilter>, key: string) {
     appliedFilters[key] = event.detail;
   }
 
@@ -112,18 +134,19 @@
           <El d="flex" gap="2">
             {#each headers as header}
               {#if header.type}
+                {@const items =
+                  header.type === "select" ? header.items : undefined}
                 <DataTableFilterButton
                   key={header.key}
                   label={header.text}
                   type={header.type}
-                  items={header.items}
+                  {items}
                   on:change={(e) => updateFilters(e, header.key)}
                 />
               {/if}
             {/each}
           </El>
           <El>
-            <!-- <Button>Default</Button> -->
             <slot name="header-actions" />
           </El>
         </El>
@@ -149,7 +172,24 @@
               </El>
             </TableCell>
             {#each headers as header}
-              <TableCell class="px-3">{header.text}</TableCell>
+              {#if sortable && header.sortable !== false && !!header.key}
+                <TableCell px="3" on:click={() => changeSort(header.key)}>
+                  <span
+                    class="table-sort"
+                    class:asc={sort?.field === header.key &&
+                      sort?.order === "ASC"}
+                    class:desc={sort?.field === header.key &&
+                      sort?.order === "DESC"}
+                    on:click={() => changeSort(header.key)}
+                  >
+                    {header.text}
+                  </span>
+                </TableCell>
+              {:else}
+                <TableCell class="px-3">
+                  {header.text}
+                </TableCell>
+              {/if}
             {/each}
           </TableHead>
           <TableBody>
@@ -201,3 +241,9 @@
     {/if}
   </El>
 </El>
+
+<style>
+  .table-sort {
+    cursor: pointer;
+  }
+</style>
