@@ -1,5 +1,5 @@
 <script lang="ts">
-  import DataTable from "$lib/DataTable.svelte";
+  import DataTable from "$lib/data-table/DataTable.svelte";
   import { Badge, Button, Card, El, Icon, Spinner } from "@ubeac/svelte";
   import TagList from "$lib/TagList.svelte";
 

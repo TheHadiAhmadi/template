@@ -1,6 +1,6 @@
 <script lang="ts">
   import { El, Spinner } from "@ubeac/svelte";
-  import type { BaseService, IParams, SortParams } from "./BaseService";
+  import type { BaseService, IParams, SortParams } from "../BaseService";
   import DataTable from "./DataTable.svelte";
 
   export let filters: string[] = [];
@@ -29,10 +29,14 @@
         fields,
       });
 
-      items = result.data;
-      page = result.page;
-      perPage = result.perPage;
-      total = result.total;
+      if (result.data) {
+        items = result.data;
+        page = result.page;
+        perPage = result.perPage;
+        total = result.total;
+
+        selected = [];
+      }
     } catch (err) {
     } finally {
       loading = false;
@@ -46,11 +50,11 @@
   {...$$restProps}
   {loading}
   {sortable}
+  {items}
   bind:page
   bind:sort
   bind:perPage
   bind:total
-  bind:items
   bind:selected
 >
   <El

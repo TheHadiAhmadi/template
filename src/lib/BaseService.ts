@@ -29,9 +29,19 @@ export class BaseService<T> {
   async insert(body: any): Promise<T> {
     const result: T = await fetch(apiURL + this.path, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(body),
     }).then((res) => res.json());
 
+    return result;
+  }
+
+  async remove(id: string | number) {
+    const result = await fetch(apiURL + this.path + "/" + id, {
+      method: "DELETE",
+    }).then((res) => res.json());
     return result;
   }
 

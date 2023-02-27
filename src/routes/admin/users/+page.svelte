@@ -1,16 +1,17 @@
 <script lang="ts">
-  import AppDataTable from "$lib/AppDataTable.svelte";
-  import AppModal from "$lib/AppModal.svelte";
+  import AppDataTable from "$lib/data-table/AppDataTable.svelte";
   import AppPage from "$lib/AppPage.svelte";
   import { UserService } from "$lib/BaseService";
   import type { DataTableHeader } from "$lib/data-table/DataTable.types";
-  import AppInput from "$lib/form/AppInput.svelte";
-  import Form from "$lib/form/Form.svelte";
+  import { Button, ButtonGroup, El, Icon } from "@ubeac/svelte";
+  import UserCreateForm from "./UserCreateForm.svelte";
+  import { modal } from "$lib/modal/store";
+  import ConfirmRemove from "./ConfirmRemove.svelte";
   import PageHeader from "$lib/PageHeader.svelte";
   import PageTitle from "$lib/PageTitle.svelte";
-  import { Button, ButtonGroup, El, Icon } from "@ubeac/svelte";
+  import NewCollection from "./NewCollection.svelte";
 
-  let modalOpen = false;
+  let table: any;
 
   let headers: DataTableHeader[] = [
     { text: "ID", key: "id" },
@@ -31,34 +32,86 @@
 
   async function onSubmit({ detail }: CustomEvent<any>) {
     await UserService.insert(detail);
-    modalOpen = false;
+    table.reload();
+    modal.close();
   }
 
-  function onReset() {}
+  let selected: any[] = [];
+  $: console.log(selected);
+
+  function onRemoveSelected() {
+    modal
+      .open(NewCollection, {
+        description: `Are you sure to remove these ${selected?.length} users?`,
+        title: "Confirm remove users",
+        async onYes() {
+          await Promise.all(
+            selected.map((item) => {
+              return UserService.remove(item.id);
+            })
+          );
+          table.reload();
+          modal.close();
+        },
+        onNo: modal.close,
+      })
+      .show();
+
+    modal.close();
+  }
+
+  function onRemove(item: any) {
+    modal
+      .open(ConfirmRemove, {
+        async onYes() {
+          console.log("REMOVE");
+          await UserService.remove(item.id);
+          table.reload();
+          modal.close();
+        },
+        onNo() {
+          console.log("DONT REMOVE");
+          modal.close();
+        },
+      })
+      .show();
+    // .on("submit", () => {
+    //   console.log("user removed successfully");
+    // })
+    // .handler();
+  }
 </script>
 
 <AppPage>
   <PageHeader>
     <PageTitle>Users</PageTitle>
-    <Button color="primary" on:click={() => (modalOpen = true)}>
+    <Button
+      color="primary"
+      on:click={modal.open(UserCreateForm, {
+        data: {
+          name: "Hadi",
+          email: "test",
+        },
+        onSubmit,
+        onReset: modal.close,
+      }).show}
+    >
       <Icon name="plus" />
       Add
     </Button>
+    <Button color="danger" on:click={() => onRemove({ id: 1 })}>
+      <Icon name="minus" />
+      remove #1
+    </Button>
+    <Button color="danger" on:click={() => onRemoveSelected()}>
+      <Icon name="minus" />
+      remove Selected Items
+    </Button>
   </PageHeader>
-  <AppDataTable {headers} service={UserService} />
+  <AppDataTable
+    bind:this={table}
+    {headers}
+    service={UserService}
+    bind:selected
+  />
 </AppPage>
-
-<Form on:reset={onReset} on:submit={onSubmit}>
-  <AppModal bind:open={modalOpen}>
-    <El slot="body">
-      <AppInput label="Name:" required name="name" />
-      <AppInput label="Email:" type="email" name="email" />
-      <AppInput label="Age:" name="age" type="number" />
-    </El>
-
-    <El slot="footer" d="flex" justifyContent="end" class="btn-list">
-      <Button type="reset">Cancel</Button>
-      <Button type="submit" color="primary">Add</Button>
-    </El>
-  </AppModal>
-</Form>

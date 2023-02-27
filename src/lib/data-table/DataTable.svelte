@@ -9,13 +9,10 @@
     Button,
   } from "@ubeac/svelte";
   import { tick } from "svelte";
-  import type { SortParams } from "./BaseService";
-  import type {
-    DataTableFilter,
-    DataTableHeader,
-  } from "./data-table/DataTable.types";
-  import DataTableFilterButton from "./DataTableFilterButton.svelte";
-  import DataTablePagination from "./DataTablePagination.svelte";
+  import type { SortParams } from "../BaseService";
+  import type { DataTableFilter, DataTableHeader } from "./DataTable.types";
+  import DataTableFilterButton from "../DataTableFilterButton.svelte";
+  import DataTablePagination from "../DataTablePagination.svelte";
 
   type T = $$Generic;
 
@@ -38,11 +35,15 @@
   let selectAll: boolean | undefined = undefined;
   let selectAllIndeterminate: boolean | undefined = undefined;
 
-  function initChecked(items: any[], selected: any[]) {
+  async function initChecked(items: any[], selected: any[]) {
+    console.log("initChecked", items.length, selected.length);
+    await tick();
     for (let i = 0; i < items.length; i++) {
       if (selected.find((selectedItem) => selectedItem == items[i])) {
+        console.log(i, "is selected");
         checked[i] = true;
       } else {
+        console.log(i, "is not selected");
         checked[i] = false;
       }
     }
@@ -66,6 +67,7 @@
   }
 
   async function updateSelectAll(items: any[], selected: any[]) {
+    console.log("updateSelectAll", items.length, selected.length);
     await tick();
     if (selected.length === items.length) {
       selectAll = true;
