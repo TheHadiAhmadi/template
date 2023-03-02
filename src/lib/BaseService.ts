@@ -45,6 +45,17 @@ export class BaseService<T> {
     return result;
   }
 
+  async update(id: string | number, data: any) {
+    const result = await fetch(apiURL + this.path + "/" + id, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }).then((res) => res.json());
+    return result;
+  }
+
   async query(params: IParams): Promise<IList<T>> {
     let query = "?";
     if (params.filters?.length) {

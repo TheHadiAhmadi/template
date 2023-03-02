@@ -80,7 +80,7 @@
 
       const result = schema.validateSync(value);
 
-      state = "valid";
+      // state = "valid";
       hint = "";
 
       return result;

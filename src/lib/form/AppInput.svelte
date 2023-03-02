@@ -4,6 +4,7 @@
   import { get_current_component } from "svelte/internal";
   import type { FormContext } from "./Form.types";
   import * as yup from "yup";
+  import type { InputProps } from "@ubeac/svelte/components/Input/Input.svelte";
 
   type Validator = {
     type: string;
@@ -19,6 +20,7 @@
   export let pattern: string | RegExp | undefined = undefined;
   export let label: string | undefined = undefined;
   export let validators: Validator[] = [];
+  export let col: InputProps["col"] = "auto";
   export let type:
     | "text"
     | "number"
@@ -101,12 +103,16 @@
     value = undefined;
   }
 
+  function onChange(event: any) {
+    value = event?.target.value;
+  }
+
   export function validate(throwError: boolean = false) {
     try {
       getSchema();
       const result = schema.validateSync(value);
 
-      state = "valid";
+      // state = "valid";
       hint = "";
       return result;
     } catch (err: any) {
@@ -114,6 +120,10 @@
       hint = err.message;
       if (throwError) throw err;
     }
+  }
+
+  $: if (!value) {
+    value = "";
   }
 
   $: {
@@ -124,15 +134,17 @@
   }
 </script>
 
-<FormField {required} {min} {max} {label} bind:state bind:hint>
+<FormField {required} {min} {max} {label} {col} bind:state bind:hint>
   <input
     {...$$restProps}
     {required}
     {min}
     {max}
+    {type}
     class="u-input"
     class:u-input-state-invalid={state === "invalid"}
     class:u-input-state-valid={dirty && state === "valid"}
-    bind:value
+    {value}
+    on:change={onChange}
   />
 </FormField>

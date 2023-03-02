@@ -7,12 +7,20 @@
     TableBody,
     TableHead,
     Button,
+    Icon,
+    Menu,
   } from "@ubeac/svelte";
   import { tick } from "svelte";
   import type { SortParams } from "../BaseService";
-  import type { DataTableFilter, DataTableHeader } from "./DataTable.types";
-  import DataTableFilterButton from "../DataTableFilterButton.svelte";
-  import DataTablePagination from "../DataTablePagination.svelte";
+  import type {
+    DataTableActions,
+    DataTableFilter,
+    DataTableHeader,
+  } from "./DataTable.types";
+  import DataTableFilterButton from "./DataTableFilterButton.svelte";
+  import DataTablePagination from "./DataTablePagination.svelte";
+  import DataTableActionButtons from "./DataTableActionButton.svelte";
+  import DataTableActionButton from "./DataTableActionButton.svelte";
 
   type T = $$Generic;
 
@@ -27,6 +35,7 @@
   export let total: number | undefined = undefined;
   export let loading: boolean = false;
   export let sortable: boolean = false;
+  export let actions: DataTableActions<T> | undefined = undefined;
 
   export let footerMode: "slot" | "pagination" | "none" = "none";
   export let headerMode: "slot" | "filters" | "none" = "none";
@@ -115,8 +124,11 @@
   let appliedFilters: Record<string, DataTableFilter> = {};
   function updateFilters(event: CustomEvent<DataTableFilter>, key: string) {
     appliedFilters[key] = event.detail;
+    console.log("appliteFilters: ", appliedFilters);
   }
 
+  $: console.log(appliedFilters);
+  $: console.log(filters);
   $: filters = [
     ...defaultFilters,
     ...Object.values(appliedFilters).filter(Boolean),
@@ -193,6 +205,9 @@
                 </TableCell>
               {/if}
             {/each}
+            {#if actions}
+              <TableCell class="w-min">{actions.text}</TableCell>
+            {/if}
           </TableHead>
           <TableBody>
             {#each items as item, index}
@@ -225,6 +240,31 @@
                     <TableCell>{item[header.key]}</TableCell>
                   {/if}
                 {/each}
+                {#if actions}
+                  <TableCell class="w-0">
+                    {#if (actions.type ?? "list") === "list"}
+                      <El d="flex" gap="2">
+                        {#each actions.buttons(item) as button}
+                          <DataTableActionButton
+                            {button}
+                            on:click={() => button.onClick?.(item)}
+                          />
+                        {/each}
+                      </El>
+                    {:else}
+                      <DataTableActionButton button={actions.dropdownButton} />
+
+                      <Menu>
+                        {#each actions.buttons(item) as button}
+                          <DataTableActionButton
+                            {button}
+                            on:click={() => button.onClick?.(item)}
+                          />
+                        {/each}
+                      </Menu>
+                    {/if}
+                  </TableCell>
+                {/if}
               </TableRow>
             {/each}
           </TableBody>

@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { El, Spinner } from "@ubeac/svelte";
+  import { Card, El, Spinner } from "@ubeac/svelte";
   import type { BaseService, IParams, SortParams } from "../BaseService";
   import DataTable from "./DataTable.svelte";
+  import type { DataTableActions, DataTableFilter } from "./DataTable.types";
 
   export let filters: string[] = [];
   export let sort: SortParams | undefined = undefined;
@@ -11,8 +12,10 @@
   export let total: number | undefined = undefined;
   export let selected: any[] = [];
   export let sortable: boolean = true;
+  export let actions: DataTableActions<any> | undefined = undefined;
 
   let loading = false;
+  let dataTableFilters: DataTableFilter[];
 
   export let service: BaseService<any>;
 
@@ -43,31 +46,41 @@
     }
   }
 
+  $: filters = (dataTableFilters ?? []).map(
+    (filter) =>
+      `${filter.key}:${filter.value}` +
+      (filter.operator ? `:${filter.operator}` : "")
+  );
+
   $: reload({ filters, fields, page, perPage, sort });
 </script>
 
-<DataTable
-  {...$$restProps}
-  {loading}
-  {sortable}
-  {items}
-  bind:page
-  bind:sort
-  bind:perPage
-  bind:total
-  bind:selected
->
-  <El
-    d="flex"
-    alignItems="center"
-    justifyContent="center"
-    position="absolute"
-    w="100"
-    h="100"
-    bgColor="light"
-    bgOpacity="75"
-    slot="loading"
+<Card>
+  <DataTable
+    {...$$restProps}
+    {loading}
+    {actions}
+    {sortable}
+    {items}
+    bind:filters={dataTableFilters}
+    bind:page
+    bind:sort
+    bind:perPage
+    bind:total
+    bind:selected
   >
-    <Spinner />
-  </El>
-</DataTable>
+    <El
+      d="flex"
+      alignItems="center"
+      justifyContent="center"
+      position="absolute"
+      w="100"
+      h="100"
+      bgColor="light"
+      bgOpacity="75"
+      slot="loading"
+    >
+      <Spinner />
+    </El>
+  </DataTable>
+</Card>

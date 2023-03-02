@@ -31,13 +31,13 @@
   const component = get_current_component();
 
   onMount(() => {
-    if (name) {
+    if (name && register) {
       register(name, component);
     }
   });
 
   onDestroy(() => {
-    if (name) {
+    if (name && unregister) {
       unregister(name);
     }
   });
@@ -79,7 +79,7 @@
 
       const result = schema.validateSync(value);
 
-      state = "valid";
+      // state = "valid";
       hint = "";
 
       return result;
@@ -102,6 +102,8 @@
       validate();
     }
   }
+
+  $: if (value == "") value = null;
 </script>
 
 <FormField {required} {label} {hint} {state}>

@@ -1,10 +1,19 @@
-<script>
+<script lang="ts">
   import { AppInput } from "$lib/form";
   import FormModal from "$lib/modal/FormModal.svelte";
   import { Button, El } from "@ubeac/svelte";
+
+  type User = {
+    id: string;
+    name: string;
+    email: string;
+    age: number;
+  };
+
+  export let values: User | undefined = undefined;
 </script>
 
-<FormModal on:submit on:reset>
+<FormModal bind:values>
   <AppInput required name="name" label="Name:" />
   <AppInput required name="email" type="email" label="Email:" />
   <AppInput name="age" type="number" label="Age:" />

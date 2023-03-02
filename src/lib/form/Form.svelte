@@ -1,7 +1,12 @@
 <script lang="ts">
   import * as yup from "yup";
 
-  import { createEventDispatcher, setContext, SvelteComponent } from "svelte";
+  import {
+    createEventDispatcher,
+    onMount,
+    setContext,
+    SvelteComponent,
+  } from "svelte";
   import type { FormContext } from "./Form.types";
   import { writable } from "svelte/store";
 
@@ -75,6 +80,19 @@
     $dirty = false;
     dispatch("reset");
   }
+
+  onMount(() => {
+    for (let key of Object.keys(components)) {
+      console.log(values);
+      if (values[key]) {
+        console.log(values[key]);
+        components[key].$$set({
+          value: values[key],
+        });
+      }
+      // console.log(key, components[key]);
+    }
+  });
 </script>
 
 <form novalidate on:reset={onReset} on:submit|preventDefault={onSubmit}>
