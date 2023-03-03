@@ -3,7 +3,7 @@
   import Modal from "./Modal.svelte";
   import { modal } from "$lib/modal/store";
 
-  import Form from "../form/Form.svelte";
+  import Form from "../form/AppForm.svelte";
 
   export let title: string | undefined = undefined;
   export let values: any = {};

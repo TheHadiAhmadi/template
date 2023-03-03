@@ -1,14 +1,20 @@
 export const something = true;
 
-export { default as Form } from "./Form.svelte";
-export { default as AppInput } from "./AppInput.svelte";
+import AppForm from "./AppForm.svelte";
+import AppInput from "./AppInput.svelte";
+import AppFormObject from "./AppFormObject.svelte";
+import AppSelect from "./AppSelect.svelte";
+import AppRadios from "./AppRadios.svelte";
+import AppCheckboxes from "./AppCheckboxes.svelte";
+import AppFormArray from "./AppFormArray.svelte";
+import type { FormType } from "./Form.types";
 
-//   FormCheckbox as AppCheckbox,
-//   FormCheckboxGroup as AppCheckboxes,
-//   FormSelect as AppSelect,
-//   FormRadioGroup as AppRadios,
-//   FormAutocomplete as AppAutocomplete,
-//   FormTextarea as AppTextarea,
-//   FormDatePicker as AppDatePicker,
+let Form: Partial<FormType> = AppForm;
+Form.Input = AppInput;
+Form.Select = AppSelect;
+Form.Checkboxes = AppCheckboxes;
+Form.Radios = AppRadios;
+Form.Array = AppFormArray;
+Form.Object = AppFormObject;
 
-// } from "@ubeac/svelte";
+export default Form as FormType;
