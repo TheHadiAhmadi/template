@@ -1,7 +1,6 @@
 <script lang="ts">
   import { FormField, Radio, RadioGroup } from "@ubeac/svelte";
-  import { getContext } from "svelte";
-  import { get_current_component, onDestroy, onMount } from "svelte/internal";
+  import { getContext, onDestroy, onMount } from "svelte";
   import type { FormContext } from "./Form.types";
   import * as yup from "yup";
 
@@ -20,11 +19,10 @@
 
   const { register, unregister, errors, dirty } =
     getContext<FormContext>("FORM");
-  const component = get_current_component();
 
   onMount(() => {
     if (name) {
-      register(name, component);
+      register(name, { set, reset, validate });
     }
   });
 
@@ -33,6 +31,10 @@
       unregister(name);
     }
   });
+
+  function set(val: any) {
+    value = val;
+  }
 
   function getSchema() {
     function isNumber() {
@@ -55,7 +57,7 @@
     }
   }
 
-  export function validate(throwError: boolean = false) {
+  function validate(throwError: boolean = false) {
     getSchema();
     try {
       const result = schema.validateSync(value);
@@ -69,7 +71,7 @@
     }
   }
 
-  export function reset() {
+  function reset() {
     state = undefined;
     hint = undefined;
     value = undefined;

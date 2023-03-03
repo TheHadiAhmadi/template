@@ -1,14 +1,8 @@
 <script lang="ts">
-  import * as yup from "yup";
-
-  import {
-    createEventDispatcher,
-    onMount,
-    setContext,
-    SvelteComponent,
-  } from "svelte";
+  import { createEventDispatcher, onMount, setContext } from "svelte";
   import type { FormContext } from "./Form.types";
   import { writable } from "svelte/store";
+  import AppFormObject from "./AppFormObject.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -16,33 +10,27 @@
 
   let validationErrors: Record<string, string> = {};
 
-  //   let schema: any;
-
-  let components: Record<string, any> = {};
   export let values: any = {};
+
   export async function validate() {
-    // validate all inputs
     dirty.set(true);
 
-    validationErrors = {};
-    for (let key of Object.keys(components)) {
-      try {
-        const result = await components[key].validate(true);
-        if (result !== null) {
-          values[key] = result;
-        }
-      } catch (err: any) {
-        validationErrors[key] = err.message;
-      }
+    const result = await form["main"].validate(true);
+    if (result) {
+      values = result;
+    } else {
+      values = {};
     }
   }
 
-  const register: FormContext["register"] = (name, component) => {
-    components[name] = component;
+  let form: Record<string, any> = {};
+
+  const register: FormContext["register"] = (name, ctx) => {
+    form[name] = ctx;
   };
 
   const unregister: FormContext["unregister"] = (name) => {
-    delete components[name];
+    delete form[name];
   };
 
   const errors = {
@@ -70,31 +58,24 @@
   }
 
   async function onReset(e: any) {
-    for (let key of Object.keys(components)) {
-      try {
-        components[key].reset();
-      } catch (err) {
-        //
-      }
+    try {
+      form["main"].reset();
+    } catch (err) {
+      //
     }
     $dirty = false;
     dispatch("reset");
   }
 
   onMount(() => {
-    for (let key of Object.keys(components)) {
-      console.log(values);
-      if (values[key]) {
-        console.log(values[key]);
-        components[key].$$set({
-          value: values[key],
-        });
-      }
-      // console.log(key, components[key]);
+    if (values) {
+      form["main"].set(values);
     }
   });
 </script>
 
 <form novalidate on:reset={onReset} on:submit|preventDefault={onSubmit}>
-  <slot />
+  <AppFormObject name="main">
+    <slot form={form["main"]} />
+  </AppFormObject>
 </form>

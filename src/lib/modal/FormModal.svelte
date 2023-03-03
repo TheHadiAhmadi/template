@@ -18,14 +18,14 @@
 </script>
 
 <Modal {title}>
-  <Form bind:values on:submit={onSubmit} on:reset={onReset}>
+  <Form bind:values on:submit={onSubmit} on:reset={onReset} let:form>
     <DialogBody>
-      <slot />
+      <slot {form} />
     </DialogBody>
 
     <DialogFooter>
       <El class="btn-list">
-        <slot name="actions" />
+        <slot {form} name="actions" />
       </El>
     </DialogFooter>
   </Form>

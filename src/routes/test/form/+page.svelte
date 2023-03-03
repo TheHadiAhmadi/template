@@ -17,7 +17,7 @@
 </script>
 
 <Form on:submit={onSubmit}>
-  <!-- <AppInput
+  <AppInput
     bind:value={values.name}
     pattern={/\w+/}
     label="Name:"
@@ -29,8 +29,8 @@
     type="email"
     label="Email:"
     name="email"
-  /> -->
-  <!-- <AppSelect
+  />
+  <AppSelect
     items={[
       { text: "male", key: 3 },
       { text: "female", key: 4 },
@@ -40,7 +40,7 @@
     placeholder="select gender"
     label="gender"
     name="gender"
-  /> -->
+  />
 
   <AppCheckboxes
     items={["HTML", "CSS", "JS", "Svelte"]}
@@ -49,8 +49,8 @@
     max={4}
     name="language"
   />
-  <!-- <AppInput bind:value={values.age} min={18} type="number" name="age" /> -->
-  <!-- 
+  <AppInput bind:value={values.age} min={18} type="number" name="age" />
+
   <AppRadios
     label="Gender: "
     name="gender2"
@@ -61,7 +61,7 @@
     ]}
     getText={(item) => item.text}
     getKey={(item) => item.key}
-  /> -->
+  />
   <Button type="submit" color="primary">Submit</Button>
   <Button type="reset">Reset</Button>
 </Form>

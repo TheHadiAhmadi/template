@@ -27,6 +27,7 @@
     | "email"
     | "tel"
     | "password"
+    | "hidden"
     | undefined = undefined;
 
   let state: "invalid" | "valid" | undefined = undefined;
@@ -40,7 +41,7 @@
 
   onMount(() => {
     if (name) {
-      register(name, component);
+      register(name, { set, reset, validate });
     }
   });
 
@@ -49,6 +50,10 @@
       unregister(name);
     }
   });
+
+  function set(val: any) {
+    value = val;
+  }
 
   function getSchema() {
     if (type !== "number") {
@@ -62,7 +67,6 @@
       }
 
       if (type === "email") {
-        // console.log("email");
         schema = schema.email(errors.email(value));
       }
 
@@ -97,7 +101,7 @@
     return schema;
   }
 
-  export function reset() {
+  function reset() {
     state = undefined;
     hint = undefined;
     value = undefined;
@@ -107,12 +111,13 @@
     value = event?.target.value;
   }
 
-  export function validate(throwError: boolean = false) {
+  function validate(throwError: boolean = false) {
     try {
       getSchema();
       const result = schema.validateSync(value);
 
-      // state = "valid";
+      state = undefined;
+
       hint = "";
       return result;
     } catch (err: any) {
@@ -145,6 +150,6 @@
     class:u-input-state-invalid={state === "invalid"}
     class:u-input-state-valid={dirty && state === "valid"}
     {value}
-    on:change={onChange}
+    on:input={onChange}
   />
 </FormField>

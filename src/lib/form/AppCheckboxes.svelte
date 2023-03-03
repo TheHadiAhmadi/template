@@ -30,11 +30,10 @@
 
   const { register, unregister, dirty, errors }: FormContext =
     getContext("FORM");
-  const component = get_current_component();
 
   onMount(() => {
     if (name) {
-      register(name, component);
+      register(name, { set, reset, validate });
     }
   });
 
@@ -43,6 +42,10 @@
       unregister(name);
     }
   });
+
+  function set(val: any) {
+    value = val;
+  }
 
   function getSchema() {
     function isNumber() {
@@ -73,7 +76,7 @@
     }
   }
 
-  export function validate(throwError: boolean = false) {
+  function validate(throwError: boolean = false) {
     getSchema();
     try {
       if (!value) value = [];
@@ -91,7 +94,7 @@
     }
   }
 
-  export function reset() {
+  function reset() {
     state = undefined;
     hint = undefined;
     value = [];

@@ -3,7 +3,6 @@
   import type { FormSelectProps } from "@ubeac/svelte";
   import { getContext, onDestroy, onMount } from "svelte";
   import type { FormContext } from "./Form.types";
-  import { get_current_component } from "svelte/internal";
   import * as yup from "yup";
 
   type $$Props = FormSelectProps & {
@@ -28,11 +27,10 @@
 
   const { register, unregister, errors, dirty }: FormContext =
     getContext("FORM");
-  const component = get_current_component();
 
   onMount(() => {
     if (name && register) {
-      register(name, component);
+      register(name, { set, reset, validate });
     }
   });
 
@@ -41,6 +39,10 @@
       unregister(name);
     }
   });
+
+  function set(val: any) {
+    value = val;
+  }
 
   function getSchema() {
     function isNumber() {
@@ -72,7 +74,7 @@
     }
   }
 
-  export function validate(throwError: boolean = false) {
+  function validate(throwError: boolean = false) {
     getSchema();
     try {
       if (value === null) value = undefined;
@@ -90,7 +92,7 @@
     }
   }
 
-  export function reset() {
+  function reset() {
     state = undefined;
     hint = undefined;
     value = multiple ? [] : undefined;
@@ -106,11 +108,10 @@
   $: if (value == "") value = null;
 </script>
 
-<FormField {required} {label} {hint} {state}>
+<FormField {...$$restProps} {required} {label} {hint} {state}>
   {#if multiple}
     <select
       multiple
-      {...$$restProps}
       class="u-select"
       class:u-select-state-valid={state === "valid"}
       class:u-select-state-invalid={state === "invalid"}
@@ -127,7 +128,6 @@
     </select>
   {:else}
     <select
-      {...$$restProps}
       class="u-select"
       class:u-select-state-valid={state === "valid"}
       class:u-select-state-invalid={state === "invalid"}
