@@ -51,9 +51,13 @@
   setContext("FORM", { register, unregister, errors, dirty });
 
   async function onSubmit(e: any) {
-    await validate();
-    if (Object.keys(validationErrors).length === 0) {
-      dispatch("submit", values);
+    try {
+      await validate();
+      if (Object.keys(validationErrors).length === 0) {
+        dispatch("submit", values);
+      }
+    } catch (err) {
+      // console.log(err);
     }
   }
 

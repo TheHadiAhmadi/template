@@ -7,6 +7,13 @@
     console.log(form);
     form.fields["columns"].remove(item);
   }
+
+  let values = {
+    columns: [
+      { name: "Hadi", type: "string" },
+      { name: "Hadi2", type: "number" },
+    ],
+  };
 </script>
 
 <El tag="h1">Only submit</El>
@@ -39,12 +46,12 @@
 
 <El tag="h1">With Array</El>
 
-<Form on:submit={(e) => console.log(e.detail)} let:form>
-  <Form.Array row name="columns" let:item>
+<Form on:submit={(e) => console.log(e.detail)} let:form bind:values>
+  <Form.Array row name="columns" let:item let:id>
     <Form.Input min={3} requierd col="5" name="name" />
     <Form.Select col="5" name="type" items={["string", "boolean", "number"]} />
     <El col="2">
-      <Button w="100" on:click={() => onClick(form, item)}>
+      <Button w="100" on:click={() => item.remove(id)}>
         <Icon name="minus" />
       </Button>
     </El>

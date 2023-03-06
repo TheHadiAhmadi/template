@@ -30,7 +30,7 @@
       }
       for (let key of keys) {
         try {
-          const result = await fields[key].validate(true);
+          const result = await fields[key].validate(throwError);
           if (result !== null) {
             value[key] = result;
           }
@@ -54,8 +54,9 @@
   }
 
   function set(val: Record<string, any> = {}) {
+    console.log("set: ", val, fields);
     for (let key of Object.keys(val)) {
-      if (typeof val[key] !== "undefined") {
+      if (fields[key] && typeof val[key] !== "undefined") {
         fields[key].set(val[key]);
       }
     }
