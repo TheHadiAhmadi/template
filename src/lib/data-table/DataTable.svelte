@@ -11,7 +11,7 @@
     Menu,
   } from "@ubeac/svelte";
   import { tick } from "svelte";
-  import type { SortParams } from "../BaseService";
+  import type { SortParams } from "../service/Services";
   import type {
     DataTableActions,
     DataTableFilter,

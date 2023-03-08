@@ -5,32 +5,32 @@
     DataTableActions,
     DataTableHeader,
   } from "$lib/data-table/DataTable.types";
-  import { onMount } from "svelte";
-  import { BaseService } from "$lib/BaseService";
-  import AppPage from "$lib/layout/AppPage.svelte";
+  import { onMount, type SvelteComponent } from "svelte";
   import PageHeader from "$lib/layout/PageHeader.svelte";
-  import PageTitle from "$lib/layout/PageTitle.svelte";
   import { Button, Icon } from "@ubeac/svelte";
   import { modal } from "$lib/modal/store";
-  import UserCreateForm from "../users/UserCreateForm.svelte";
+  import { BaseService } from "$lib/service/base/BaseService";
+  import FormService from "$lib/common/FormService.svelte";
+  import ConfirmModal from "$lib/modal/ConfirmModal.svelte";
 
+  let tableEl: SvelteComponent;
   let headers: DataTableHeader[] = [];
 
   const service = new BaseService(`/${$page.params.table}`);
 
   let actions: DataTableActions<any> = {
     text: "Actions",
-    buttons: () => [
+    buttons: (item) => [
       {
         icon: "trash",
         onClick: () => {
-          console.log("remove");
+          removeItem(item);
         },
       },
       {
         icon: "pencil",
         onClick: () => {
-          console.log("edit");
+          editItem(item);
         },
       },
       {
@@ -61,13 +61,30 @@
     });
   }
 
-  function openCreateItem() {
-    modal
-      .open(UserCreateForm, {
-        onSubmit: console.log,
-        onReset: modal.close,
-      })
-      .show();
+  async function editItem(item: any) {
+    const result = await modal.open(FormService, {
+      //
+    });
+    if (result) {
+      await service.update(item.id, result);
+      tableEl.reload();
+    }
+  }
+
+  async function removeItem(item: any) {
+    const choice = await modal.open(ConfirmModal);
+    if (choice) {
+      await service.remove(item.id);
+      tableEl.reload();
+    }
+  }
+
+  async function createItem() {
+    const result = await modal.open(FormService);
+    if (result) {
+      await service.insert(result);
+      tableEl.reload();
+    }
   }
 
   onMount(() => {
@@ -75,21 +92,19 @@
   });
 </script>
 
-<AppPage>
-  <PageHeader>
-    <PageTitle>{$page.params.table}</PageTitle>
-    <Button color="primary" on:click={openCreateItem}>
-      <Icon name="plus" />
-      Add
-    </Button>
-  </PageHeader>
-  {#key $page.params.table}
-    <AppDataTable
-      headerMode="filters"
-      footerMode="pagination"
-      {service}
-      {headers}
-      {actions}
-    />
-  {/key}
-</AppPage>
+<PageHeader title={$page.params.table}>
+  <Button color="primary" on:click={createItem}>
+    <Icon name="plus" />
+    Add
+  </Button>
+</PageHeader>
+{#key $page.params.table}
+  <AppDataTable
+    bind:this={tableEl}
+    headerMode="filters"
+    footerMode="pagination"
+    {service}
+    {headers}
+    {actions}
+  />
+{/key}

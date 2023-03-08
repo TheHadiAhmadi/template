@@ -1,7 +1,8 @@
 <script lang="ts">
+  import AppDataTable from "$lib/data-table/AppDataTable.svelte";
   import DataTable from "$lib/data-table/DataTable.svelte";
+  import { TodoService } from "$lib/service";
   import { Badge, Button, Card, El, Icon, Spinner } from "@ubeac/svelte";
-  import TagList from "$lib/TagList.svelte";
 
   let headers = [
     {
@@ -82,36 +83,5 @@
       <Icon name="plus" /> Add
     </Button>
   </El>
-  <Card>
-    <DataTable
-      {items}
-      {headers}
-      footerMode="pagination"
-      headerMode="filters"
-      defaultFilters={[{ key: "name", value: "hadi", operator: "like" }]}
-      bind:filters
-      bind:selected
-    >
-      <El
-        d="flex"
-        alignItems="center"
-        justifyContent="center"
-        position="absolute"
-        w="100"
-        h="100"
-        bgColor="light"
-        bgOpacity="75"
-        slot="loading"
-      >
-        <Spinner />
-      </El>
-      <El slot="header" d="flex" justifyContent="between">
-        <El>Header</El>
-        <El class="btn-list">
-          <Button on:click={addRow} size="sm" color="primary">Add Row</Button>
-          <Button size="sm">TEST</Button>
-        </El>
-      </El>
-    </DataTable>
-  </Card>
+  <AppDataTable service={TodoService} {headers} bind:filters bind:selected />
 </El>

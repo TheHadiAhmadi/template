@@ -1,40 +1,44 @@
 <script lang="ts">
   import Form from "$lib/form";
   import FormModal from "$lib/modal/FormModal.svelte";
-  import { Button, ButtonGroup, El, Icon, Input } from "@ubeac/svelte";
-  import { createEventDispatcher } from "svelte";
+  import { Button, El, Fieldset, Icon } from "@ubeac/svelte";
 
+  export let editing: boolean = false;
   export let values: any = {
     columns: [],
   };
 
-  //   let name: string | undefined = undefined;
-  //   let columns: any[] = [];
-
   const columnTypes = ["string", "number", "id", "date", "boolean", "---"];
-
-  const addColumn = () => {
-    values.columns = [...(values.columns ?? []), { name: "", type: "" }];
-  };
-
-  const removeColumn = (index: number) => {
-    values.columns = (values.columns ?? []).filter((col, i) => i !== index);
-  };
 </script>
 
-<FormModal title="Add Table" let:form>
-  <Form.Input name="type" type="hidden" value="add-table" />
+<FormModal title="Add Table" bind:values let:form>
+  {#if editing}
+    <Form.Input name="type" type="hidden" value="edit-table" />
+  {:else}
+    <Form.Input name="type" type="hidden" value="add-table" />
+  {/if}
   <Form.Input name="name" placeholder="Table name..." />
 
-  <Form.Array name="columns" row let:item>
-    <Form.Input name="name" col="6" required />
-    <Form.Select name="type" col="5" items={columnTypes} />
+  <Form.Array name="columns" row let:item let:id>
+    <Form.Input
+      placeholder="Enter Column name..."
+      name="name"
+      col="6"
+      required
+    />
+    <Form.Select
+      placeholder="Select Column type..."
+      name="type"
+      col="5"
+      items={columnTypes}
+    />
     <El col="1">
-      <Button w="100" color="danger" on:click={() => item.remove()}>
+      <Button w="100" color="danger" on:click={() => item.remove(id)}>
         <Icon name="minus" />
       </Button>
     </El>
   </Form.Array>
+
   <Button
     my="2"
     color="primary"
@@ -43,10 +47,6 @@
     <Icon name="plus" />
     Add Column
   </Button>
-
-  <El p="2">
-    <Button on:click={addColumn} color="primary">Add Column</Button>
-  </El>
 
   <El slot="actions" class="btn-list">
     <Button type="reset">Cancel</Button>

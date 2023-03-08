@@ -1,6 +1,10 @@
 <script lang="ts">
   import { Card, El, Spinner } from "@ubeac/svelte";
-  import type { BaseService, IParams, SortParams } from "../BaseService";
+  import type {
+    BaseService,
+    IParams,
+    SortParams,
+  } from "../service/base/BaseService";
   import DataTable from "./DataTable.svelte";
   import type { DataTableActions, DataTableFilter } from "./DataTable.types";
 

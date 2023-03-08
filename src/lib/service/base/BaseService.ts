@@ -1,3 +1,5 @@
+import { API_URL } from "$lib/config";
+
 export type SortParams = {
   field: string;
   order: "ASC" | "DESC";
@@ -18,42 +20,36 @@ export type IList<T> = {
   page: number;
 };
 
-const apiURL = "https://test-db-12345.vercel.app";
-
 export class BaseService<T> {
   path = "";
   constructor(path: string) {
     this.path = path;
   }
 
-  async insert(body: any): Promise<T> {
-    const result: T = await fetch(apiURL + this.path, {
-      method: "POST",
+  async fetch<T>(
+    pathname: string,
+    method: string = "GET",
+    body: any = undefined
+  ): Promise<T> {
+    return fetch(API_URL + this.path + pathname, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      method,
+      body: body ? JSON.stringify(body) : undefined,
     }).then((res) => res.json());
+  }
 
-    return result;
+  async insert(body: any): Promise<T> {
+    return this.fetch<T>("/", "POST", body);
   }
 
   async remove(id: string | number) {
-    const result = await fetch(apiURL + this.path + "/" + id, {
-      method: "DELETE",
-    }).then((res) => res.json());
-    return result;
+    return this.fetch<any>("/" + id, "DELETE");
   }
 
   async update(id: string | number, data: any) {
-    const result = await fetch(apiURL + this.path + "/" + id, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((res) => res.json());
-    return result;
+    return this.fetch<any>("/" + id, "PUT", data);
   }
 
   async query(params: IParams): Promise<IList<T>> {
@@ -79,27 +75,7 @@ export class BaseService<T> {
     }
 
     query = query.substring(0, query.length - 1);
-    const result: IList<T> = await fetch(apiURL + this.path + query).then(
-      (res) => res.json()
-    );
 
-    return result;
+    return this.fetch<IList<T>>(query);
   }
 }
-
-type User = {
-  name: string;
-  email: string;
-  age: number;
-  id: number;
-};
-
-type Product = {
-  name: string;
-  sku: string;
-  count: number;
-  id: number;
-};
-
-export const UserService = new BaseService<User>("/users");
-export const ProductService = new BaseService<Product>("/products");

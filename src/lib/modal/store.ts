@@ -27,7 +27,7 @@ function createModalStore() {
     Props extends ComponentProps<Component> | {}
   >(
     component: new (...args: any) => Component,
-    props: Props,
+    props: Props = {},
     modalProps?: DialogProps
   ): Promise<any> {
     return new Promise((resolve, reject) => {

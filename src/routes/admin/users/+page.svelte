@@ -1,7 +1,7 @@
 <script lang="ts">
   import AppDataTable from "$lib/data-table/AppDataTable.svelte";
   import AppPage from "$lib/layout/AppPage.svelte";
-  import { UserService } from "$lib/BaseService";
+  import { UserService } from "$lib/Services";
   import type {
     DataTableActions,
     DataTableHeader,
@@ -9,7 +9,7 @@
   import { Button, ButtonGroup, El, Icon } from "@ubeac/svelte";
   import UserCreateForm from "./UserCreateForm.svelte";
   import { modal } from "$lib/modal/store";
-  import ConfirmRemove from "../../ConfirmRemove.svelte";
+  import ConfirmRemove from "../../../lib/modal/ConfirmModal.svelte";
   import PageHeader from "$lib/layout/PageHeader.svelte";
   import PageTitle from "$lib/layout/PageTitle.svelte";
 

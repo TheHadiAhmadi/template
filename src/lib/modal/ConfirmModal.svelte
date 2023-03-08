@@ -1,6 +1,6 @@
 <script lang="ts">
   import Modal from "$lib/modal/Modal.svelte";
-  import { Button, DialogBody, El } from "@ubeac/svelte";
+  import { Button, El } from "@ubeac/svelte";
   import { modal } from "$lib/modal/store";
 
   export let description: string = "Are you sure you want to remove this item?";
