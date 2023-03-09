@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { El, FormField } from "@ubeac/svelte";
+  import { El } from "@ubeac/svelte";
   import { onDestroy, getContext, onMount, setContext } from "svelte";
   import AppFormObject from "./AppFormObject.svelte";
   import type { FormContext } from "./Form.types";
@@ -97,4 +97,4 @@
       <slot item={ctx} id={val.id} />
     </AppFormObject>
   {/each}
-  </El>
+</El>
